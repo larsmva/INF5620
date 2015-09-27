@@ -1,0 +1,189 @@
+\documentclass[11pt]{article}
+\usepackage[english]{babel} 
+\usepackage[utf8]{inputenc}
+
+\usepackage{multirow}
+\usepackage{tabularx} 
+\usepackage{forloop} 
+\usepackage{graphicx}
+\usepackage{lipsum}
+\usepackage{listings}
+\usepackage{cite}
+\usepackage{color}
+\usepackage{datetime}
+\usepackage{advdate}
+\usepackage{mathptmx}
+\usepackage{amsmath} 
+\usepackage{caption}
+\usepackage{subcaption}
+
+
+\begin{document}
+\setlength\parindent{0pt}
+\title{Mandatry Assignment no.2}
+\author{Lars Magnus Valnes \\  
+INF5620 
+}
+\maketitle
+
+%\tableofcontents
+%\clearpage
+\section{Introduction}
+We will in this text go through the derivation required to complete exercise 13: Compare discretizations of a Neumann condition. In this exercise we will look at different ways to handle spacial Neumann conditions for the wave equation with variational wave velocity. 
+The partial differential equation is given as
+\begin{equation}
+u_{tt}= \partial_x \left( q(x) u_{x} \right)+ f(x,t),
+\end{equation} 
+with $q(x)$ denotes the wave velocity squared, i.e. $q\left( x\right) =c\sp{2} \left( x\right) $ and $f$ as the source term.
+\\
+The discretization scheme can be expressed in compact notation as 
+\begin{equation}
+\left[ D_tD_t u \right]_{i}\sp{n} = \left[D_x \left(q(x) D_x u \right)\right]_{i}\sp{n} + \left[f\right]_{i}\sp{n},
+\label{Eq::compact_notation}
+\end{equation}
+where $n$ is the temporal discertization and $i$ is the spacial discertization.
+Writing out the compact notation in Eq.\ref{Eq::compact_notation} with the centered difference scheme we obtain the expression 
+\begin{equation}
+\frac{u\sp{n+1}_i-2*u\sp{n}_i+u\sp{n-1}_i    }{\left(\Delta t\right)\sp{2}}  =  \frac{ q_{i+\sp{2}/_{2}} \left( u\sp{n}_{i+1} -u\sp{n}_{i} \right) -  q_{i-\sp{2}/_{2}}  \left( u\sp{n}_{i} -u\sp{n}_{i-1} \right)}{\left(\Delta x\right)\sp{2}} + f\sp{n}_i .
+\label{Eq::dis_exp}
+\end{equation}
+Here the notations $\Delta t$ and $\Delta x$ denotes the temporal and spacial discretization lengths.
+Rearranging Eq.\ref{Eq::dis_exp} will give an explicit scheme like 
+\begin{equation}
+u\sp{n+1}_i  =  2u\sp{n}_i-u\sp{n-1}_i + C\sp{2} \left( q_{i+\sp{2}/_{2}} \left( u\sp{n}_{i+1} -u\sp{n}_{i} \right) -  q_{i-\sp{2}/_{2}}  \left( u\sp{n}_{i} -u\sp{n}_{i-1} \right) \right) +  \left(\Delta t\right)\sp{2}f\sp{n}_i ,
+\label{Eq::explicit_scheme}
+\end{equation}
+The notation of $C$ will be used throughout this assignment paper, and defined as  $C = \frac{\Delta t}{\Delta x}$. 
+\section{Discretization}
+
+\subsection{Spacial discretization}
+The spacial discretization divides the line interval $\left[0,L \right]$ into $N_x$ parts. Thus the end-points are given at $i=0$ and $i=N_x$, and the spacial step length is given by
+\begin{equation}
+\Delta x = \frac{L}{N_x}
+\end{equation}
+The handling of the end-points will detailed in section \ref{sec::Neum}. 
+\subsection{Temporal discretization}
+The temporal discretization divides the time interval $\left[0,T \right]$ into $N_t$ parts. Thus the end-points are given at $n=0$ and $n=N_t$, and the temporal step length us given by
+\begin{equation}
+\Delta t = \frac{T}{N_t}
+\end{equation}
+We will handle the initial time step,i.e. $n=1$ using the compact notation 
+\begin{equation}
+\left[ D_{2t} u\right]\sp{n}_i = 0 .
+\end{equation}
+which gives $u\sp{-1}_i = u\sp{1}_i$. 
+Thus the expilict scheme in Eq. \ref{Eq::explicit_scheme} becomes 
+\begin{equation}
+u\sp{1}_i  =  u\sp{0}_i + \frac{1}{2}C\sp{2} \left( q_{i+\sp{2}/_{2}} \left( u\sp{0}_{i+1} -u\sp{0}_{i} \right) -  q_{i-\sp{2}/_{2}}  \left( u\sp{0}_{i} -u\sp{0}_{i-1} \right) \right) + \frac{1}{2}\left(\Delta t\right)\sp{2}f\sp{0}_i ,
+\label{Eq::inital_time_step}
+\end{equation}
+
+
+\subsection{The arithmetic mean}
+The determination of $q_{i+\sp{1}/_2}$ and $q_{i-\sp{1}/_2}$ can easily be done if $q$ is a known function. In this assignment $q$ is a defined function, thus the evaluation can be written as
+\begin{equation}
+q_{i\pm \sp{1}/_2} = q\left( x_{i} \pm  \frac{\Delta x}{2}\right)  
+\label{Eq::mean}
+\end{equation}
+
+
+\section{Neumann discretization}
+\label{sec::Neum}
+We start Neumann discretization expressed in compact notation at the spacial boundaries, (i.e. $x=0$ and $x =L $ ) as
+\begin{equation}
+\left[ D_{2x} u\right]\sp{n}_i = 0 .
+\label{Eq::Neumann_spacial_dis}
+\end{equation}
+This is equivalent to
+\begin{equation}
+\frac{u\sp{n}_{i+1} - u\sp{n}_{i-1}}{2\Delta x} = 0  ,
+\end{equation}
+which implies that $u\sp{n}_{i+1} = u\sp{n}_{i-1}$. This can be inserted into Eq.\ref{Eq::explicit_scheme} to obtain
+\begin{equation}
+u\sp{n+1}_i  =  2u\sp{n}_i-u\sp{n-1}_i + C\sp{2} \left(\left( q_{i+\sp{1}/_{2}} +  q_{i-\sp{1}/_{2}} \right) \left( u\sp{n}_{i-1} -u\sp{n}_{i} \right) \right) +  \left(\Delta t\right)\sp{2}f\sp{n}_i .
+\end{equation}
+The method given in Eq.\ref{Eq::Neumann_spacial_dis} can also be used for $q$, which results in $q\sp{n}_{i+\sp{1}/_{2}} =  q\sp{n}_{i-\sp{1}/_{2}}$.
+This gives the explicit scheme at the spacial boundaries as
+\begin{equation}
+\begin{aligned}
+u\sp{n+1}_i  =  2u\sp{n}_i-u\sp{n-1}_i + C\sp{2}2 q_{i+\sp{1}/_{2}}\left(  u\sp{n}_{i+1} -u\sp{n}_{i} \right) -\left(\Delta t\right)\sp{2}f\sp{n}_i &\quad \text{for} \quad i=0 \\
+u\sp{n+1}_i  =  2u\sp{n}_i-u\sp{n-1}_i + C\sp{2} 2 q_{i-\sp{1}/_{2}}\left(  u\sp{n}_{i} -u\sp{n}_{i-1} \right) -\left(\Delta t\right)\sp{2}f\sp{n}_i  &\quad \text{for} \quad i=N_x
+\end{aligned}
+\end{equation}
+with $q\sp{n}_{i+\sp{1}/_{2}}$ and $q\sp{n}_{1-\sp{1}/_{2}}$ determined using Eq.\ref{Eq::mean}.
+\\\\
+Another method is to approximate the expression $ q_{i+\sp{1}/_{2}} +  q_{i-\sp{1}/_{2}}$ through Taylor expansion, which yields
+\begin{equation}
+q_{i+\sp{2}/_{2}} + q_{i-\sp{2}/_{2}} = q_i + q_i - \partial_x q_i\frac{\Delta x}{2} +  \partial_x q_i\frac{\Delta x}{2}  + O\left( \Delta x\sp{2}\right) \approx 2q_i .
+\end{equation}
+Hence Eq.\ref{Eq::explicit_scheme} can be written as  
+\begin{equation}
+\begin{aligned}
+u\sp{n+1}_i  =  2u\sp{n}_i-u\sp{n-1}_i + C\sp{2}  2q_{i} \left(  u\sp{n}_{i+1} -u\sp{n}_{i} \right) -\left(\Delta t\right)\sp{2}f\sp{n}_i &\quad \text{for} \quad i=0 \\
+u\sp{n+1}_i  =  2u\sp{n}_i-u\sp{n-1}_i + C\sp{2} 2q_{i} \left(  u\sp{n}_{i} -u\sp{n}_{i-1} \right) -\left(\Delta t\right)\sp{2}f\sp{n}_i  &\quad \text{for} \quad i=N_x
+\end{aligned}
+\end{equation}
+
+For the remaining parts in this assignment, we will select 
+\begin{equation}
+q\left( x \right) = 1 + \text{cos}\left(k x \right) ,
+\end{equation}
+with $k= \pi/_{L}$ . We have now a function of $q$ that is symmetric around the spacial  boundaries, i.e  $x=0$ and $x=L$. This means that $\partial_x q(x) = 0$, thus the approximation $q_{1\pm\sp{1}/_2}$ as
+\begin{equation}
+q_{1\pm\sp{1}/_2} =  q_i \pm \partial_x q_i\frac{\Delta x}{2} + O\left( \Delta x\sp{2}\right) \approx q_i .
+\label{Eq::sym_approx}
+\end{equation}
+
+%Thus the approximation of $ q\sp{n}_{i+\sp{1}/_{2}} $ at the spacial boundaries becomes
+%\begin{equation}
+% q\sp{n}_{i+\sp{1}/_{2}}  =  q\sp{n}_i - \partial_x q\sp{n}_i\frac{\Delta x}{2} +  \partial_x\sp{2} q\sp{n}_i\left( \frac{\Delta x}{2}\right)\sp{2} \approx  q\sp{n}_{i} ,
+%\end{equation}
+%since that symmtery proerty gives $\partial_x q(x) = 0$.
+%\begin{equation}
+%\begin{aligned}
+%u\sp{n+1}_i  =  2u\sp{n}_i-u\sp{n-1}_i + C\sp{2} 2 q\sp{n}_i\left(  u\sp{n}_{i+1} -u\sp{n}_{i} \right) -\left(\Delta t\right)\sp{2}f\sp{n}_i &\quad \text{for} \quad i=0 \\
+%u\sp{n+1}_i  =  2u\sp{n}_i-u\sp{n-1}_i + C\sp{2} 2 q\sp{n}_i\left(  u\sp{n}_{i} -u\sp{n}_{i-1} \right) -\left(\Delta t\right)\sp{2}f\sp{n}_i  &\quad \text{for} \quad i=N_x
+%\end{aligned}
+%\end{equation}
+The next discretization method is the one-sided approximation yielding 
+\begin{equation}
+\begin{aligned}
+  u\sp{n}_{i} -  u\sp{n}_{i-1} = 0 &\quad \text{for} \quad i = 0\\
+  u\sp{n}_{i+1} -  u\sp{n}_{i} = 0 &\quad \text{for} \quad i = N_x
+\end{aligned}
+\label{Eq::one_sided}
+\end{equation}
+Using Eq.\ref{Eq::one_sided} combined with Eq.\ref{Eq::explicit_scheme} and Eq.\ref{Eq::sym_approx} will results in the explicit scheme 
+\begin{equation}
+\begin{aligned}
+u\sp{n+1}_i  =  2u\sp{n}_i-u\sp{n-1}_i +  C\sp{2}  q_{i} \left( u\sp{n}_{i+1} -u\sp{n}_{i} \right) +  \left(\Delta t\right)\sp{2}f\sp{n}_i , &\quad \text{for} \quad i = 0 \\
+u\sp{n+1}_i  =  2u\sp{n}_i-u\sp{n-1}_i +C\sp{2}q_{i} \left( u\sp{n}_{i-1} -u\sp{n}_{i} \right)  +  \left(\Delta t\right)\sp{2}f\sp{n}_i , &\quad \text{for} \quad i = N_x .
+\end{aligned}
+\end{equation}
+In the last Neumann discretization technique, we will use the compact notation 
+\begin{equation}
+\left[ D_t D_t u \right]\sp{n}_i = \frac{1}{\Delta x}\left(\left[q D_x u \right]_{i+\sp{1}/_2}\sp{n}  -\left[q D_x u \right]_{i-\sp{1}/_2}\sp{n} \right) + \left[ f \right]\sp{n}_i.
+\label{Eq::last_compact}
+\end{equation}
+We will place the boundary at $x_{i+\sp{1}/_2}$ with $i=N_x$ and at  $x_{i-\sp{1}/_2}$ with $i=0$, yielding 
+\begin{equation}
+\begin{aligned}
+  \left[q D_x u \right]_{i+\sp{1}/_2}\sp{n} &= 0 \quad \text{for} \quad i = N_x \\
+  \left[q D_x u \right]_{i-\sp{1}/_2}\sp{n} &= 0 \quad \text{for} \quad i = 0
+\end{aligned}.
+\label{Eq::fourth_approx}
+\end{equation}
+We can insert Eq.\ref{Eq::fourth_approx} into Eq.\ref{Eq::last_compact} and obtain the explicit scheme for the end-points as
+\begin{equation}
+\begin{aligned}
+u\sp{n+1}_i  =  2u\sp{n}_i-u\sp{n-1}_i + C\sp{2}q_{i+\sp{2}/_{2}}  \left( u\sp{n}_{i+1} -u\sp{n}_{i} \right)  +  \left(\Delta t\right)\sp{2}f\sp{n}_i & \quad \text{for} \quad i = 0 \\
+ u\sp{n+1}_i  =  2u\sp{n}_i-u\sp{n-1}_i + C\sp{2}q_{i-\sp{2}/_{2}}  \left( u\sp{n}_{i-1} -u\sp{n}_{i} \right)  +  \left(\Delta t\right)\sp{2}f\sp{n}_i & \quad \text{for} \quad i+1/2  N_x 				
+\end{aligned}
+\label{Eq::Last_scheme}
+\end{equation}
+The boundary placement means that Eq.\ref{Eq::sym_approx} is not valid.
+
+
+
+
+\end{document}
